@@ -2,12 +2,12 @@ require 'csv'
 
 desc 'Import CSV data'
 task import_data: [:environment] do
-  InvoiceItem.destroy_all
-  Transaction.destroy_all
-  Invoice.destroy_all
-  Customer.destroy_all
-  Item.destroy_all
-  Merchant.destroy_all
+  InvoiceItem.delete_all
+  Transaction.delete_all
+  Invoice.delete_all
+  Customer.delete_all
+  Item.delete_all
+  Merchant.delete_all
 
   customers = './db/data/customers.csv'
   @customer_count = 0
@@ -105,4 +105,8 @@ task import_data: [:environment] do
   end
   puts "#{@invoice_item_count} invoice items created!"
   puts 'Finished importing data!'
+
+  ActiveRecord::Base.connection.tables.each do |table|
+    ActiveRecord::Base.connection.reset_pk_sequence!(table)
+  end
 end
