@@ -23,11 +23,15 @@ RSpec.describe 'Api::V1::Items', type: :request do
         expect(json[:data][:attributes][attribute]).to eq(value)
       end
     end
+    it "returns an error if the item doesn't exist" do
+      get '/api/v1/items/9999999999999'
+      expect(response.status).to eq(404)
+    end
   end
 
   describe 'GET /index'
   it 'returns http success' do
-    get '/api/v1/items/179'
+    get '/api/v1/items'
     expect(response).to have_http_status(:success)
   end
   it 'returns the correct data' do
