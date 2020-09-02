@@ -8,4 +8,20 @@ class Item < ApplicationRecord
   validates :description, presence: true
   validates :unit_price, presence: true
   validates :merchant_id, presence: true
+
+  def self.search_by_string(params)
+    find_by("lower(#{params.keys.first}) like ?", "%#{params.values.first.downcase}%")
+  end
+
+  def self.search_by_num(params)
+    where("#{params.keys.first} = #{params.values.first}").first
+  end
+
+  def self.search_by_date(params)
+    if params[:created_at].present?
+      find_by_created_at(params[:created_at])
+    else
+      find_by_updated_at(params[:updated_at])
+    end
+  end
 end
