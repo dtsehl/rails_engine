@@ -1,16 +1,31 @@
 class Api::V1::Items::FindController < ApplicationController
   def show
-    if item_params_string.present?
-      item = Item.search_by_string(item_params_string)
-    elsif item_params_num.present?
-      item = Item.search_by_num(item_params_num)
-    else
-      item = Item.search_by_date(item_params_date)
-    end
+    item = if item_params_string.present?
+             Item.search_single_by_string(item_params_string)
+           elsif item_params_num.present?
+             Item.search_single_by_num(item_params_num)
+           else
+             Item.search_single_by_date(item_params_date)
+           end
     if item.nil?
       record_not_found
     else
       render json: ItemSerializer.new(item)
+    end
+  end
+
+  def index
+    items = if item_params_string.present?
+              Item.search_multiple_by_string(item_params_string)
+            elsif item_params_num.present?
+              Item.search_multiple_by_num(item_params_num)
+            else
+              Item.search_multiple_by_date(item_params_date)
+            end
+    if items.empty?
+      record_not_found
+    else
+      render json: ItemSerializer.new(items)
     end
   end
 
