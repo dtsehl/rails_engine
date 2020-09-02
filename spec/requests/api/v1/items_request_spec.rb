@@ -157,4 +157,14 @@ RSpec.describe 'Api::V1::Items', type: :request do
       expect(response).to have_http_status(422)
     end
   end
+
+  describe 'Relationships' do
+    it 'can get merchant for an item' do
+      get '/api/v1/items/209/merchant'
+      json = JSON.parse(response.body, symbolize_names: true)
+      expected_id = '11'
+
+      expect(json[:data][:id]).to eq(expected_id)
+    end
+  end
 end
