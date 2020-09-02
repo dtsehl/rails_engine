@@ -226,5 +226,87 @@ RSpec.describe 'Api::V1::Items', type: :request do
 
       expect(response).to have_http_status(404)
     end
+    it "can find a list of items by name that contain a fragment, case insensitive" do
+      get '/api/v1/items/find_all?name=haru'
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      names = json[:data].map do |item|
+        item[:attributes][:name].downcase
+      end
+
+      expect(names.count).to eq(18)
+      names.each do |name|
+        expect(name).to include('haru')
+      end
+    end
+    it "can find a list of items by description that contain a fragment, case insensitive" do
+      get '/api/v1/items/find_all?description=nesc'
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      descriptions = json[:data].map do |item|
+        item[:attributes][:description].downcase
+      end
+
+      expect(descriptions.count).to eq(208)
+      descriptions.each do |description|
+        expect(description).to include('nesc')
+      end
+    end
+    it "can find a list of items by unit price" do
+      get '/api/v1/items/find_all?unit_price=751.07'
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      unit_prices = json[:data].map do |item|
+        item[:attributes][:unit_price]
+      end
+
+      expect(unit_prices.count).to eq(2)
+      unit_prices.each do |unit_price|
+        expect(unit_price).to eq(751.07)
+      end
+    end
+    it "can find a list of items by merchant id" do
+      get '/api/v1/items/find_all?merchant_id=5'
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      merchant_ids = json[:data].map do |item|
+        item[:attributes][:merchant_id]
+      end
+
+      expect(merchant_ids.count).to eq(11)
+      merchant_ids.each do |merchant_id|
+        expect(merchant_id).to eq(5)
+      end
+    end
+    it "can find a list of items by id" do
+      get '/api/v1/items/find_all?id=5'
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      ids = json[:data].map do |item|
+        item[:attributes][:id]
+      end
+
+      expect(ids.count).to eq(1)
+      ids.each do |id|
+        expect(id).to eq(5)
+      end
+    end
+    it "can find a list of items by created_at" do
+      get '/api/v1/items/find_all?created_at=2012-03-27 14:53:59 UTC'
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(json[:data].count).to eq(170)
+    end
+    it "can find a list of items by updated_at" do
+      get '/api/v1/items/find_all?updated_at=2012-03-27 14:53:59 UTC'
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(json[:data].count).to eq(170)
+    end
+    it 'will error if the find_all params are incorrect' do
+      get '/api/v1/items/find_all?name=zzzzzzzzz'
+
+      expect(response).to have_http_status(404)
+    end
   end
 end

@@ -5,12 +5,14 @@ Rails.application.routes.draw do
       namespace :items do
         get '/:id/merchant', to: 'merchants#show'
         get '/find', to: 'find#show'
+        get '/find_all', to: 'find#index'
       end
       resources :items, only: %i[show index create destroy update]
 
       namespace :merchants do
         get '/:id/items', to: 'items#index'
         get '/find', to: 'find#show'
+        get '/find_all', to: 'find#index'
       end
       resources :merchants, only: %i[show index create destroy update]
     end
