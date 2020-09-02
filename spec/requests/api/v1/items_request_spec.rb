@@ -167,4 +167,64 @@ RSpec.describe 'Api::V1::Items', type: :request do
       expect(json[:data][:id]).to eq(expected_id)
     end
   end
+
+  describe 'search endpoints' do
+    it 'can find an item based on a fragmented name, case insensitive' do
+      get '/api/v1/items/find?name=haru'
+      json = JSON.parse(response.body, symbolize_names: true)
+      name = json[:data][:attributes][:name].downcase
+
+      expect(json[:data]).to be_a(Hash)
+      expect(name).to include('haru')
+    end
+    it 'can find an item based on a fragmented description, case insensitive' do
+      get '/api/v1/items/find?description=nesc'
+      json = JSON.parse(response.body, symbolize_names: true)
+      description = json[:data][:attributes][:description].downcase
+
+      expect(json[:data]).to be_a(Hash)
+      expect(description).to include('nesc')
+    end
+    it 'can find an item based on a unit price' do
+      get '/api/v1/items/find?unit_price=751.07'
+      json = JSON.parse(response.body, symbolize_names: true)
+      unit_price = json[:data][:attributes][:unit_price]
+
+      expect(json[:data]).to be_a(Hash)
+      expect(unit_price).to eq(751.07)
+    end
+    it 'can find an item based on a merchant id' do
+      get '/api/v1/items/find?merchant_id=3'
+      json = JSON.parse(response.body, symbolize_names: true)
+      merchant_id = json[:data][:attributes][:merchant_id]
+
+      expect(json[:data]).to be_a(Hash)
+      expect(merchant_id).to eq(3)
+    end
+    it 'can find an item based on its id' do
+      get '/api/v1/items/find?id=1'
+      json = JSON.parse(response.body, symbolize_names: true)
+      name = json[:data][:attributes][:name].downcase
+
+      expect(json[:data]).to be_a(Hash)
+      expect(name).to include('item qui esse')
+    end
+    it 'can find an item based on its created_at' do
+      get '/api/v1/items/find?created_at=2012-03-27 14:53:59 UTC'
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(json[:data]).to be_a(Hash)
+    end
+    it 'can find an item based on its updated_at' do
+      get '/api/v1/items/find?updated_at=2012-03-27 14:54:00 UTC'
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(json[:data]).to be_a(Hash)
+    end
+    it 'will error if the params are incorrect' do
+      get '/api/v1/items/find?id=9999999'
+
+      expect(response).to have_http_status(404)
+    end
+  end
 end
