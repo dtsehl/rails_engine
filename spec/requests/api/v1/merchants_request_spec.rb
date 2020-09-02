@@ -118,4 +118,44 @@ RSpec.describe 'Api::V1::Merchants', type: :request do
       expect(item_ids.sort).to eq(expected_ids)
     end
   end
+
+  describe 'search endpoints' do
+    it 'can find a merchant based on a fragmented name, case insensitive' do
+      get '/api/v1/merchants/find?name=ILL'
+      json = JSON.parse(response.body, symbolize_names: true)
+      name = json[:data][:attributes][:name].downcase
+
+      expect(json[:data]).to be_a(Hash)
+      expect(name).to include('ill')
+    end
+    it 'can find a merchant based on its id' do
+      get '/api/v1/merchants/find?id=1'
+      json = JSON.parse(response.body, symbolize_names: true)
+      name = json[:data][:attributes][:name].downcase
+
+      expect(json[:data]).to be_a(Hash)
+      expect(name).to include('schroeder-jerde')
+    end
+    it 'can find a merchant based on its created_at' do
+      get '/api/v1/merchants/find?created_at=2012-03-27 14:54:07 UTC'
+      json = JSON.parse(response.body, symbolize_names: true)
+      name = json[:data][:attributes][:name].downcase
+
+      expect(json[:data]).to be_a(Hash)
+      expect(name).to include('kirlin, jakubowski and smitham')
+    end
+    it 'can find a merchant based on its updated_at' do
+      get '/api/v1/merchants/find?updated_at=2012-03-27 14:54:02 UTC'
+      json = JSON.parse(response.body, symbolize_names: true)
+      name = json[:data][:attributes][:name].downcase
+
+      expect(json[:data]).to be_a(Hash)
+      expect(name).to include('quitzon and sons')
+    end
+    it 'will error if the params are incorrect' do
+      get '/api/v1/merchants/find?id=9999999'
+
+      expect(response).to have_http_status(404)
+    end
+  end
 end
