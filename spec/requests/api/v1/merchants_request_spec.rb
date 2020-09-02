@@ -148,10 +148,50 @@ RSpec.describe 'Api::V1::Merchants', type: :request do
 
       expect(json[:data]).to be_a(Hash)
     end
-    it 'will error if the params are incorrect' do
+    it 'will error if the find params are incorrect' do
       get '/api/v1/merchants/find?id=9999999'
 
       expect(response).to have_http_status(404)
     end
+  end
+  it "can find a list of merchants by name that contain a fragment, case insensitive" do
+    get '/api/v1/merchants/find_all?name=ILL'
+    json = JSON.parse(response.body, symbolize_names: true)
+
+    names = json[:data].map do |merchant|
+      merchant[:attributes][:name]
+    end
+
+    expect(names.sort).to eq(["Schiller, Barrows and Parker", "Tillman Group", "Williamson Group", "Williamson Group", "Willms and Sons"])
+  end
+  it "can find a list of merchants by id" do
+    get '/api/v1/merchants/find_all?id=5'
+    json = JSON.parse(response.body, symbolize_names: true)
+
+    ids = json[:data].map do |item|
+      item[:attributes][:id]
+    end
+
+    expect(ids.count).to eq(1)
+    ids.each do |id|
+      expect(id).to eq(5)
+    end
+  end
+  it "can find a list of merchants by created_at" do
+    get '/api/v1/merchants/find_all?created_at=2012-03-27 14:53:59 UTC'
+    json = JSON.parse(response.body, symbolize_names: true)
+
+    expect(json[:data].count).to eq(9)
+  end
+  it "can find a list of merchants by updated_at" do
+    get '/api/v1/merchants/find_all?updated_at=2012-03-27 14:53:59 UTC'
+    json = JSON.parse(response.body, symbolize_names: true)
+
+    expect(json[:data].count).to eq(8)
+  end
+  it 'will error if the find_all params are incorrect' do
+    get '/api/v1/merchants/find_all?name=zzzzzzzzz'
+
+    expect(response).to have_http_status(404)
   end
 end
