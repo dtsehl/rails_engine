@@ -212,18 +212,18 @@ RSpec.describe 'Api::V1::Items', type: :request do
     it 'can find an item based on its created_at' do
       get '/api/v1/items/find?created_at=2012-03-27 14:53:59 UTC'
       json = JSON.parse(response.body, symbolize_names: true)
-      name = json[:data][:attributes][:name].downcase
+      id = json[:data][:attributes][:id]
 
       expect(json[:data]).to be_a(Hash)
-      expect(name).to include('item qui esse')
+      expect(id).to eq(1)
     end
     it 'can find an item based on its updated_at' do
       get '/api/v1/items/find?updated_at=2012-03-27 14:54:00 UTC'
       json = JSON.parse(response.body, symbolize_names: true)
-      name = json[:data][:attributes][:name].downcase
+      id = json[:data][:attributes][:id]
 
       expect(json[:data]).to be_a(Hash)
-      expect(name).to include('item inventore sint')
+      expect(id).to eq(171)
     end
     it 'will error if the params are incorrect' do
       get '/api/v1/items/find?id=9999999'

@@ -139,18 +139,18 @@ RSpec.describe 'Api::V1::Merchants', type: :request do
     it 'can find a merchant based on its created_at' do
       get '/api/v1/merchants/find?created_at=2012-03-27 14:54:07 UTC'
       json = JSON.parse(response.body, symbolize_names: true)
-      name = json[:data][:attributes][:name].downcase
+      id = json[:data][:attributes][:id]
 
       expect(json[:data]).to be_a(Hash)
-      expect(name).to include('kirlin, jakubowski and smitham')
+      expect(id).to eq(76)
     end
     it 'can find a merchant based on its updated_at' do
       get '/api/v1/merchants/find?updated_at=2012-03-27 14:54:02 UTC'
       json = JSON.parse(response.body, symbolize_names: true)
-      name = json[:data][:attributes][:name].downcase
+      id = json[:data][:attributes][:id]
 
       expect(json[:data]).to be_a(Hash)
-      expect(name).to include('quitzon and sons')
+      expect(id).to eq(33)
     end
     it 'will error if the params are incorrect' do
       get '/api/v1/merchants/find?id=9999999'
