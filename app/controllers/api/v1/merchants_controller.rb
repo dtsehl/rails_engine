@@ -1,11 +1,6 @@
 class Api::V1::MerchantsController < ApplicationController
   def show
-    merchant = Merchant.find_by_id(params[:id])
-    if merchant.present?
-      render json: MerchantSerializer.new(merchant)
-    else
-      render json: '{"error": "not_found"}', status: :not_found
-    end
+    render json: MerchantSerializer.new(Merchant.find(params[:id]))
   end
 
   def index
@@ -26,13 +21,8 @@ class Api::V1::MerchantsController < ApplicationController
   end
 
   def update
-    merchant = Merchant.find_by_id(params[:id])
-    if merchant.present?
-      merchant.update(merchant_params)
-      render json: MerchantSerializer.new(Merchant.find(merchant.id))
-    else
-      render json: '{"error": "not_found"}', status: :not_found
-    end
+    merchant = Merchant.find(params[:id])
+    render json: MerchantSerializer.new(Merchant.find(merchant.id)) if merchant.update(merchant_params)
   end
 
   private
